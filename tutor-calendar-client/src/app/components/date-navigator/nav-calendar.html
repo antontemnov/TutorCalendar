@@ -1,17 +1,20 @@
 <div class="nav-calendar-container">
   <div class="nav-calendar">
     <div class="selector-row">
-      <span class="title">{{_monthLabel | titlecase}}</span>
-      <div (click)="previousClicked()" data-button="prev" class="button prev-month">
+      <span class="title">
+        {{dateSelectionService.activeMonth$ | async | moment: dateFormats.display.monthYearA11yLabel | titlecase}}
+      </span>
+      <div (click)="dateSelectionService.changeActiveMonth(-1)"
+           data-button="prev" class="button prev-month">
         <i data-button="prev" class="material-icons">navigate_before</i>
       </div>
-      <div (click)="nextClicked()" data-button="next" class="button next-month">
+      <div (click)="dateSelectionService.changeActiveMonth(1)"
+           data-button="next" class="button next-month">
         <i data-button="next" class="material-icons">navigate_next</i>
       </div>
     </div>
 
     <app-nav-calendar-body
-      [label]="_monthLabel"
       [rows]="_weeks"
       [weekdays]="_weekdays"
       [todayValue]="_todayDate!"
@@ -20,7 +23,7 @@
       [previewStart]="_previewStart!"
       [previewEnd]="_previewEnd!"
       [isRange]="_isRange"
-      [activeCell]="_dateAdapter.getDate(activeDate) + _firstWeekOffset - 1"
+      [activeCell]="_dateAdapter.getDate(dateSelectionService.activeMonth$ | async) + _firstWeekOffset - 1"
       (selectedValueChange)="_dateSelected($event)"
       (previewChange)="_previewChanged($event)"
     ></app-nav-calendar-body>

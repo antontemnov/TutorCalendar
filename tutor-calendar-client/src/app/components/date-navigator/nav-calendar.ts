@@ -1,9 +1,7 @@
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
   Inject,
-  Input,
   OnChanges, OnDestroy,
   Optional,
   SimpleChanges
@@ -22,23 +20,7 @@ const DAYS_PER_WEEK = 7
   styleUrls: ['./nav-calendar.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
-  @Input()
-  get activeDate(): D {
-    return this._activeDate
-  }
-  set activeDate(value: D) {
-    const oldActiveDate = this._activeDate
-    this._activeDate = value
-    if (!this._hasSameMonthAndYear(oldActiveDate, this._activeDate)) {
-      this._init()
-    }
-  }
-
-  private _activeDate: D
-
-  _monthLabel: string
-
+export class NavCalendar<D> implements OnChanges, OnDestroy {
   _weeks: NavCalendarCell[][]
 
   _firstWeekOffset: number
@@ -61,38 +43,31 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
 
   private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY
 
-  constructor(private dateSelectionService: DateSelectionService<D>,
+  private _monthChangedSubscription = Subscription.EMPTY
+
+  constructor(public dateSelectionService: DateSelectionService<D>,
               @Optional() public _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(NAV_DATE_FORMATS) private _dateFormats: DateFormats) {
+              @Optional() @Inject(NAV_DATE_FORMATS) public dateFormats: DateFormats) {
     this.subscribeOnSelectionChanged()
   }
 
   private subscribeOnSelectionChanged(): void {
+    this._monthChangedSubscription.unsubscribe()
+    this._monthChangedSubscription = this.dateSelectionService.activeMonth$.subscribe(this.generate.bind(this))
+
     this._dateNavigatorSelectionChangedSubscription.unsubscribe()
     this._dateNavigatorSelectionChangedSubscription = this.dateSelectionService.selectionChanged.subscribe(event => {
       this.selectDateRangeCells(event.dateRange)
     })
   }
 
-  ngAfterContentInit(): void {
-    this.activeDate = this.dateSelectionService.days.length > 0 ?
-      this.dateSelectionService.days[0] :
-      this._dateAdapter.today()
-
-    this._init()
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
   }
 
-  _init(): void {
-    this._monthLabel = this._dateFormats.display.monthYearA11yLabel
-      ? this._dateAdapter.format(this.activeDate, this._dateFormats.display.monthYearA11yLabel)
-      : this._dateAdapter.getMonthNames('long')[this._dateAdapter.getMonth(this.activeDate)]
-
+  generate(activeMonth): void {
     const firstOfMonth = this._dateAdapter.createDate(
-      this._dateAdapter.getYear(this.activeDate),
-      this._dateAdapter.getMonth(this.activeDate), 1)
+      this._dateAdapter.getYear(activeMonth),
+      this._dateAdapter.getMonth(activeMonth), 1)
 
     const firstOfNextMonth = this._dateAdapter.addCalendarMonths(firstOfMonth, 1)
 
@@ -103,7 +78,7 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
       this._dateAdapter.getFirstDayOfWeek()) % DAYS_PER_WEEK
 
     this._initWeekdays()
-    this._createWeekCells()
+    this._createWeekCells(activeMonth)
   }
 
   private _initWeekdays(): void {
@@ -117,14 +92,14 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
     this._weekdays = weekdays.slice(firstDayOfWeek).concat(weekdays.slice(0, firstDayOfWeek))
   }
 
-  private _createWeekCells(): void {
-    const daysInMonth = this._dateAdapter.getNumDaysInMonth(this.activeDate)
+  private _createWeekCells(activeMonth): void {
+    const daysInMonth = this._dateAdapter.getNumDaysInMonth(activeMonth)
     this._weeks = [[]]
 
     const firstWeekStart = this._dateAdapter.getStartOfWeek(
       this._dateAdapter.createDate(
-        this._dateAdapter.getYear(this.activeDate),
-        this._dateAdapter.getMonth(this.activeDate), 1))
+        this._dateAdapter.getYear(activeMonth),
+        this._dateAdapter.getMonth(activeMonth), 1))
 
     for (let i = 0, cell = 0; i < this._firstWeekOffset + daysInMonth + this._lastWeekOffset; i++, cell++) {
       if (cell === DAYS_PER_WEEK) {
@@ -155,14 +130,6 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
         cellClasses,
         date))
     }
-  }
-
-  previousClicked(): void {
-    this.activeDate = this._dateAdapter.addCalendarMonths(this.activeDate, -1)
-  }
-
-  nextClicked(): void {
-    this.activeDate = this._dateAdapter.addCalendarMonths(this.activeDate, 1)
   }
 
   _dateSelected(event: NavCalendarUserEvent<number>): void {
@@ -199,11 +166,6 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
     )
   }
 
-  private _hasSameMonthAndYear(d1: D | null, d2: D | null): boolean {
-    return !!(d1 && d2 && this._dateAdapter.getMonth(d1) === this._dateAdapter.getMonth(d2) &&
-      this._dateAdapter.getYear(d1) === this._dateAdapter.getYear(d2))
-  }
-
   private selectDateRangeCells(selectedValue: DateRange<D> | D | null): void {
     if (selectedValue instanceof DateRange) {
       this._rangeStart = this._getCellCompareValue(selectedValue.start)
@@ -227,6 +189,7 @@ export class NavCalendar<D> implements AfterContentInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._monthChangedSubscription.unsubscribe()
     this._dateNavigatorSelectionChangedSubscription.unsubscribe()
   }
 }

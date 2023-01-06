@@ -9,7 +9,6 @@ export type DateFormats = {
     monthLabel?: any,
     monthYearLabel: any,
     monthYearA11yLabel: any,
-    // dateA11yLabel: any,
   }
 }
 

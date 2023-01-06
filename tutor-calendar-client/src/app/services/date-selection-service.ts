@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
 import {DateAdapter} from '../../core/date-adapter'
-import {Observable, Subject} from 'rxjs'
+import {BehaviorSubject, Observable, Subject} from 'rxjs'
 
 export class DateRange<D> {
   constructor(
@@ -25,6 +25,15 @@ export interface DateSelectionModelChange<S, D> {
 
 @Injectable({providedIn: 'root'})
 export class DateSelectionService<D> {
+  get activeMonth$(): BehaviorSubject<D> {
+    this._activeMonth$ = this._activeMonth$ || new BehaviorSubject<D>(this.days.length > 0 ?
+      this.days[0] :
+      this.dateAdapter.today())
+
+    return this._activeMonth$
+  }
+  private _activeMonth$: BehaviorSubject<D>
+
   get selection(): D | DateRange<D> {
     return this._selection
   }
@@ -40,6 +49,11 @@ export class DateSelectionService<D> {
 
    constructor(private dateAdapter: DateAdapter<D>) {
    }
+
+  changeActiveMonth(dir: number) {
+    const value = this.dateAdapter.addCalendarMonths(this.activeMonth$.value, dir)
+    this.activeMonth$.next(value)
+  }
 
   updateSelection(value: D | DateRange<D>, source: unknown) {
     const oldValue = (this as {selection: D | DateRange<D>}).selection

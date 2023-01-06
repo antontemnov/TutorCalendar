@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core'
 import {CommonModule} from '@angular/common'
 import {DropdownInputComponent} from './dropdown-input/dropdown-input.component'
 import {FormsModule} from '@angular/forms'
-import {MomentPipe} from '../pipes/moment.pipe'
+import {MomentPipe} from './moment.pipe'
 
 @NgModule({
   declarations: [

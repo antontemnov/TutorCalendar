@@ -21,8 +21,6 @@ export interface NavCalendarUserEvent<D> {
   styleUrls: ['nav-calendar-body.scss']
 })
 export class CalendarBodyComponent implements OnDestroy  {
-  @Input() label: string
-
   @Input() rows: NavCalendarCell[][]
 
   @Input() weekdays: {long: string, narrow: string}[]
