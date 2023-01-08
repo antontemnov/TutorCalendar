@@ -9,6 +9,7 @@ import {ModalService} from '../../services/modal.service'
 import {DateRange, DateSelectionService} from '../../services/date-selection-service'
 import {Subscription} from 'rxjs'
 import {DateAdapter} from '../../../core/date-adapter'
+import {ActivityClient} from '../../shared/activity-client'
 
 export interface TimetableUserEvent<T> {
   args: T
@@ -42,7 +43,8 @@ export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
   constructor(private readonly _timelineService: TimelineService,
               private readonly dateSelectionService: DateSelectionService<D>,
               private readonly _previewService: TimetablePreviewService,
-              private dialogService: ModalService,
+              private readonly dialogService: ModalService,
+              private readonly activityClient: ActivityClient,
               private _dateAdapter: DateAdapter<D>) {
     this.subscribeOnSelectionChanged()
   }
@@ -92,6 +94,8 @@ export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
           const column = this.columns.find(c => c.datekey === dialogResult.slot.position.datekey)
           if (column) {
             column.slots.push(dialogResult.slot)
+
+            this.activityClient.updateOrCreateBySlot(dialogResult.slot)
           }
         }
         this._previewService.cleanupPreview()
@@ -100,8 +104,17 @@ export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
 
   private subscribeOnSelectionChanged(): void {
     this._dateNavigatorSelectionChangedSubscription.unsubscribe()
-    this._dateNavigatorSelectionChangedSubscription = this.dateSelectionService.selectionChanged.subscribe(event => {
-      this.columns = event.selectedDays.map(day => this.toColumnDay(day))
+    this._dateNavigatorSelectionChangedSubscription = this.dateSelectionService.selectionChanged
+      .subscribe(event => {
+        this.columns = event.selectedDays.map(day => this.toColumnDay(day))
+
+        this.activityClient.load(event.selectedDays.map(day => this._dateAdapter.getDateKey(day)))
+          .subscribe(
+            activities => {
+              // this.columns = activities.map(activity => this.toColumnDay(activity))
+              console.log('Completed!!', activities)
+            }
+          )
     })
   }
 

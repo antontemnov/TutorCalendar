@@ -25,6 +25,11 @@ import { ModalComponent } from './components/modal/modal.component'
 import { TimeRangeSelectorComponent } from './components/time-range-selector/time-range-selector.component'
 import {DateSelectionService} from './services/date-selection-service'
 import {DateNavigatorModule} from './components/date-navigator/date-navigator.module'
+import {ActivityClient} from './shared/activity-client'
+import {AngularFireModule} from '@angular/fire/compat'
+import {environment} from '../environments/environment'
+import {FirestoreService} from '../core/firestore.service'
+import {ReferencePipe} from '../core/reference.pipe'
 
 @NgModule({
   declarations: [
@@ -38,6 +43,7 @@ import {DateNavigatorModule} from './components/date-navigator/date-navigator.mo
     ActivityAddDialog,
     ModalComponent,
     TimeRangeSelectorComponent,
+    ReferencePipe,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +55,7 @@ import {DateNavigatorModule} from './components/date-navigator/date-navigator.mo
     FormsModule,
     ReactiveFormsModule,
     DateNavigatorModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig)
   ],
   providers: [
     {
@@ -67,6 +74,8 @@ import {DateNavigatorModule} from './components/date-navigator/date-navigator.mo
     DateSelectionService,
     TimelineService,
     TimetablePreviewService,
+    FirestoreService,
+    ActivityClient,
   ],
   bootstrap: [AppComponent]
 })

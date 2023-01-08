@@ -60,6 +60,10 @@ export class TimeRange {
 
   constructor(private time1: Time | null,
               private time2: Time | null) {
+    if (!time1 || !time2) {
+      return null
+    }
+
     if (time1?.toCompareValue() > time2?.toCompareValue()) {
       this._start = time2
       this._end = time1
