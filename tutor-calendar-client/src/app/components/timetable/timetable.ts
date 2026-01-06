@@ -10,7 +10,6 @@ import {DateRange, DateSelectionService} from '../../services/date-selection-ser
 import {Subscription} from 'rxjs'
 import {DateAdapter} from '../../../core/date-adapter'
 import {ActivityClient} from '../../shared/activity-client'
-import {CommonModule} from '@angular/common'
 
 export interface TimetableUserEvent<T> {
   args: T
@@ -21,7 +20,7 @@ export interface TimetableUserEvent<T> {
     templateUrl: './timetable.html',
     styleUrls: ['./timetable.scss'],
     standalone: true,
-    imports: [CommonModule, TimetableColumn]
+    imports: [TimetableColumn]
 })
 export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
   private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY

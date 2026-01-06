@@ -1,7 +1,7 @@
-import {Component, ElementRef, Inject, input, NgZone, output} from '@angular/core'
+import {Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef} from '@angular/core'
 import {TimetableUserEvent} from './timetable'
 import {TimeRange} from './model/time-model'
-import {DOCUMENT, CommonModule} from '@angular/common'
+import {DOCUMENT} from '@angular/common'
 import {TimetableSlot} from './timetable-slot'
 
 export class ColumnDay<D = any> {
@@ -44,7 +44,7 @@ const FIRING_EVENT_THRESHOLD = 5
     templateUrl: './timetable-column.html',
     styleUrls: ['./timetable-column.scss'],
     standalone: true,
-    imports: [CommonModule, TimetableSlot]
+    imports: [TimetableSlot]
 })
 export class TimetableColumn {
 

@@ -2,11 +2,12 @@
      [attr.data-datekey]="datekey()"
 >
   <div class="layout">
-    <app-timetable-slot *ngFor="let slot of slots()"
-                        [attr.draggable]="true"
-                        [title]="slot.title"
-                        [timeRangeTitle]="slot?.timeRange?.toString()"
-                        [ngStyle]="{'top.px': slot.position.top, 'height.px': slot.position.height}">
-    </app-timetable-slot>
+    @for (slot of slots(); track slot.position.datekey + slot.position.top) {
+      <app-timetable-slot [attr.draggable]="true"
+                          [title]="slot.title"
+                          [timeRangeTitle]="slot?.timeRange?.toString()"
+                          [ngStyle]="{'top.px': slot.position.top, 'height.px': slot.position.height}">
+      </app-timetable-slot>
+    }
   </div>
 </div>

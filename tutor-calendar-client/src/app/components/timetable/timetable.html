@@ -2,34 +2,40 @@
   <div class="row">
     <div class="timeline"></div>
     <div class="line-delta"></div>
-    <div class="table-title" *ngFor="let col of _columns">
-      <div class="title-grid-serif"></div>
-      <div class="data weekday">{{col.weekday.narrow | uppercase}}</div>
-      <div class="data number-day">{{col.title}}</div>
-    </div>
+    @for (col of _columns; track col.datekey) {
+      <div class="table-title">
+        <div class="title-grid-serif"></div>
+        <div class="data weekday">{{col.weekday.narrow | uppercase}}</div>
+        <div class="data number-day">{{col.title}}</div>
+      </div>
+    }
   </div>
 
   <div class="row">
     <div class="table-container">
       <div class="timeline" data-role="timeline" #timeline>
-        <div *ngFor="let point of mainTimeline"
-             class="time-point"
-             data-time-point="{{point.toString()}}">{{point.toString()}}
-        </div>
+        @for (point of mainTimeline; track point.totalMinutes) {
+          <div class="time-point"
+               data-time-point="{{point.toString()}}">{{point.toString()}}
+          </div>
+        }
       </div>
 
       <div class="grid">
-        <div role="row" *ngFor="let _ of mainTimeline"></div>
+        @for (point of mainTimeline; track point.totalMinutes) {
+          <div role="row"></div>
+        }
       </div>
 
       <div class="vertical-grid-line line-delta"></div>
 
       <div class="columns" #columnsContainer>
-        <app-timetable-column *ngFor="let col of columns"
-                              [datekey]="col.datekey"
-                              [slots]="col.slots"
-                              (selectionChanged)="_previewChanged($event)"
-        ></app-timetable-column>
+        @for (col of columns; track col.datekey) {
+          <app-timetable-column [datekey]="col.datekey"
+                                [slots]="col.slots"
+                                (selectionChanged)="_previewChanged($event)"
+          ></app-timetable-column>
+        }
       </div>
 
     </div>

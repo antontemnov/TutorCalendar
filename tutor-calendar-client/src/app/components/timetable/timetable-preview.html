@@ -1,7 +1,8 @@
-<app-timetable-column *ngFor="let datekey of this.datekeys"
-                      [slots]="_getPreviewSlot(datekey)"
-                      [datekey]="datekey"
-></app-timetable-column>
+@for (datekey of this.datekeys; track datekey) {
+  <app-timetable-column [slots]="_getPreviewSlot(datekey)"
+                        [datekey]="datekey"
+  ></app-timetable-column>
+}
 
 
 

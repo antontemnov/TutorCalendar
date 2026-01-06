@@ -1,5 +1,4 @@
 import {Component, input, output, ElementRef, NgZone, OnDestroy} from '@angular/core'
-import {CommonModule} from '@angular/common'
 
 export class NavCalendarCell<D = any> {
   constructor(public value: number,
@@ -21,7 +20,7 @@ export interface NavCalendarUserEvent<D> {
     templateUrl: 'nav-calendar-body.html',
     styleUrls: ['nav-calendar-body.scss'],
     standalone: true,
-    imports: [CommonModule]
+    imports: []
 })
 export class CalendarBodyComponent implements OnDestroy  {
   rows = input.required<NavCalendarCell[][]>()

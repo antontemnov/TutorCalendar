@@ -1,27 +1,32 @@
 <div role="grid" class="table">
   <div class="row week-header">
-  <span *ngFor="let title of weekdays()"
-        class="weekday-title cell"
-        [attr.text]="title.long"
-        data-tooltip-position="bottom">
+    @for (title of weekdays(); track title.long) {
+      <span class="weekday-title cell"
+            [attr.text]="title.long"
+            data-tooltip-position="bottom">
         {{title.narrow | titlecase}}
-  </span>
+      </span>
+    }
   </div>
 
-  <div *ngFor="let weekDays of rows(); let rowIndex = index" class="row">
-  <span *ngFor="let day of weekDays; let colIndex = index" class="cell" role="cell"
-        [attr.data-mat-row]="rowIndex"
-        [attr.data-mat-col]="colIndex"
-        [class.active]="_isActiveCell(rowIndex, colIndex)"
-        [class.selected]="_isSelected(day.compareValue)"
-        [class.today]="day.cssClasses.includes('today')"
-        [class.range-start]="_isRangeStart(day.compareValue)"
-        [class.range-end]="_isRangeEnd(day.compareValue)"
-        [class.in-range]="_isInRange(day.compareValue)">
-    <div class="day-title"
-         [class.gray-text]="day.cssClasses.includes('gray-text')">
-      {{day.displayValue}}
+  @for (weekDays of rows(); track $index; let rowIndex = $index) {
+    <div class="row">
+      @for (day of weekDays; track day.compareValue; let colIndex = $index) {
+        <span class="cell" role="cell"
+              [attr.data-mat-row]="rowIndex"
+              [attr.data-mat-col]="colIndex"
+              [class.active]="_isActiveCell(rowIndex, colIndex)"
+              [class.selected]="_isSelected(day.compareValue)"
+              [class.today]="day.cssClasses.includes('today')"
+              [class.range-start]="_isRangeStart(day.compareValue)"
+              [class.range-end]="_isRangeEnd(day.compareValue)"
+              [class.in-range]="_isInRange(day.compareValue)">
+          <div class="day-title"
+               [class.gray-text]="day.cssClasses.includes('gray-text')">
+            {{day.displayValue}}
+          </div>
+        </span>
+      }
     </div>
-  </span>
-  </div>
+  }
 </div>
