@@ -13,16 +13,17 @@ import {
 import {filter, from, map, Observable, of, tap, toArray} from 'rxjs'
 
 @Component({
-  selector: 'app-time-range-selector',
-  templateUrl: './time-range-selector.component.html',
-  styleUrls: ['./time-range-selector.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TimeRangeSelectorComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-time-range-selector',
+    templateUrl: './time-range-selector.component.html',
+    styleUrls: ['./time-range-selector.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TimeRangeSelectorComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class TimeRangeSelectorComponent implements OnInit, ControlValueAccessor {
   _startTimeOptions$: Observable<Time[]>

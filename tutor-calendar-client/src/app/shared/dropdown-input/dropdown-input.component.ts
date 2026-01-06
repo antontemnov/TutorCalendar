@@ -4,9 +4,10 @@ import {TimetableUserEvent} from '../../components/timetable/timetable'
 import {Converter} from '../converters'
 
 @Component({
-  selector: 'app-dropdown-input',
-  templateUrl: './dropdown-input.component.html',
-  styleUrls: ['./dropdown-input.component.scss'],
+    selector: 'app-dropdown-input',
+    templateUrl: './dropdown-input.component.html',
+    styleUrls: ['./dropdown-input.component.scss'],
+    standalone: false
 })
 export class DropdownInputComponent<T> implements ControlValueAccessor {
   @Input() options: T[]

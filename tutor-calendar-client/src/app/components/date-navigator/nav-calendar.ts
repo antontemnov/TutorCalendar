@@ -15,10 +15,11 @@ import {Subscription} from 'rxjs'
 const DAYS_PER_WEEK = 7
 
 @Component({
-  selector: 'app-nav-calendar',
-  templateUrl: './nav-calendar.html',
-  styleUrls: ['./nav-calendar.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-nav-calendar',
+    templateUrl: './nav-calendar.html',
+    styleUrls: ['./nav-calendar.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NavCalendar<D> implements OnChanges, OnDestroy {
   _weeks: NavCalendarCell[][]

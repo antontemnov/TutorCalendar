@@ -16,9 +16,10 @@ export interface TimetableUserEvent<T> {
 }
 
 @Component({
-  selector: 'app-timetable',
-  templateUrl: './timetable.html',
-  styleUrls: ['./timetable.scss']
+    selector: 'app-timetable',
+    templateUrl: './timetable.html',
+    styleUrls: ['./timetable.scss'],
+    standalone: false
 })
 export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
   private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY

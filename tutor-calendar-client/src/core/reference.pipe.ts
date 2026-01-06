@@ -3,7 +3,8 @@ import {Observable} from 'rxjs'
 import {FirestoreService} from './firestore.service'
 
 @Pipe({
-  name: 'reference'
+    name: 'reference',
+    standalone: false
 })
 export class ReferencePipe implements PipeTransform {
   constructor(private firestoreService: FirestoreService) {

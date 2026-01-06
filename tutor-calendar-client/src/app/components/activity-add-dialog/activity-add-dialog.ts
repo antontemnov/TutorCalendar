@@ -6,9 +6,10 @@ import {FormControl, FormGroup, Validators} from '@angular/forms'
 import {TimetablePreviewService} from '../../services/timetable-preview.service'
 
 @Component({
-  selector: 'app-activity-add-dialog',
-  templateUrl: './activity-add-dialog.html',
-  styleUrls: ['./activity-add-dialog.scss']
+    selector: 'app-activity-add-dialog',
+    templateUrl: './activity-add-dialog.html',
+    styleUrls: ['./activity-add-dialog.scss'],
+    standalone: false
 })
 export class ActivityAddDialog {
   form: FormGroup

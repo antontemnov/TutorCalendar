@@ -16,9 +16,10 @@ export interface NavCalendarUserEvent<D> {
 }
 
 @Component({
-  selector: 'app-nav-calendar-body',
-  templateUrl: 'nav-calendar-body.html',
-  styleUrls: ['nav-calendar-body.scss']
+    selector: 'app-nav-calendar-body',
+    templateUrl: 'nav-calendar-body.html',
+    styleUrls: ['nav-calendar-body.scss'],
+    standalone: false
 })
 export class CalendarBodyComponent implements OnDestroy  {
   @Input() rows: NavCalendarCell[][]

@@ -78,18 +78,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tutor-calendar-client:build"
+            "buildTarget": "tutor-calendar-client:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tutor-calendar-client:build:production"
+              "buildTarget": "tutor-calendar-client:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tutor-calendar-client:build"
+            "buildTarget": "tutor-calendar-client:build"
           }
         },
         "test": {
@@ -137,7 +137,6 @@
       }
     }
   },
-  "defaultProject": "tutor-calendar-client",
   "cli": {
     "analytics": false
   }

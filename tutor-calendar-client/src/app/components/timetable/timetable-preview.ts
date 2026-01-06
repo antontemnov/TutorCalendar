@@ -3,9 +3,10 @@ import {PreviewData} from '../../services/timetable-preview.service'
 import {Slot} from './timetable-column'
 
 @Component({
-  selector: 'app-timetable-preview',
-  templateUrl: './timetable-preview.html',
-  styleUrls: ['./timetable-preview.scss']
+    selector: 'app-timetable-preview',
+    templateUrl: './timetable-preview.html',
+    styleUrls: ['./timetable-preview.scss'],
+    standalone: false
 })
 export class TimetablePreview {
   datekeys: number[] | []

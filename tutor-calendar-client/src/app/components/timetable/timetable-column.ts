@@ -39,9 +39,10 @@ export class TimetableColumnActionEventArgs {
 const FIRING_EVENT_THRESHOLD = 5
 
 @Component({
-  selector: 'app-timetable-column',
-  templateUrl: './timetable-column.html',
-  styleUrls: ['./timetable-column.scss']
+    selector: 'app-timetable-column',
+    templateUrl: './timetable-column.html',
+    styleUrls: ['./timetable-column.scss'],
+    standalone: false
 })
 export class TimetableColumn {
 
