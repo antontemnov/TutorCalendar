@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core'
+import {UpperCasePipe} from '@angular/common'
 import {Time} from './model/time-model'
 import {ColumnDay, TimetableColumnActionEventArgs, TimetableColumn} from './timetable-column'
 import {TimetablePreviewService} from '../../services/timetable-preview.service'
@@ -20,7 +21,7 @@ export interface TimetableUserEvent<T> {
     templateUrl: './timetable.html',
     styleUrls: ['./timetable.scss'],
     standalone: true,
-    imports: [TimetableColumn]
+    imports: [UpperCasePipe, TimetableColumn]
 })
 export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
   private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY
