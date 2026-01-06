@@ -1,11 +1,14 @@
 import {Component, Inject, OnInit} from '@angular/core'
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog'
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog'
+import {DragDropModule} from '@angular/cdk/drag-drop'
+import {MatButtonModule} from '@angular/material/button'
 
 @Component({
     selector: 'app-modal',
     templateUrl: './modal.component.html',
     styleUrls: ['./modal.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [MatDialogModule, DragDropModule, MatButtonModule]
 })
 export class ModalComponent<TComponent, TData> implements OnInit {
 

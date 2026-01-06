@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core'
 import {Time} from './model/time-model'
-import {ColumnDay, TimetableColumnActionEventArgs} from './timetable-column'
+import {ColumnDay, TimetableColumnActionEventArgs, TimetableColumn} from './timetable-column'
 import {TimetablePreviewService} from '../../services/timetable-preview.service'
 import {ActivityAddDialog} from '../activity-add-dialog/activity-add-dialog'
 import {ActivityAddDialogData, ActivityAddDialogResult} from '../activity-add-dialog/activity-dialog-model'
@@ -10,6 +10,7 @@ import {DateRange, DateSelectionService} from '../../services/date-selection-ser
 import {Subscription} from 'rxjs'
 import {DateAdapter} from '../../../core/date-adapter'
 import {ActivityClient} from '../../shared/activity-client'
+import {CommonModule} from '@angular/common'
 
 export interface TimetableUserEvent<T> {
   args: T
@@ -19,7 +20,8 @@ export interface TimetableUserEvent<T> {
     selector: 'app-timetable',
     templateUrl: './timetable.html',
     styleUrls: ['./timetable.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, TimetableColumn]
 })
 export class Timetable<D> implements OnInit, AfterViewInit, OnDestroy {
   private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY

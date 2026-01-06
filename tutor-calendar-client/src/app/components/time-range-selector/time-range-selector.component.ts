@@ -1,4 +1,4 @@
-import {Component, EventEmitter, forwardRef, Inject, Injector, OnInit, Output} from '@angular/core'
+import {Component, forwardRef, Inject, Injector, OnInit} from '@angular/core'
 import {TimelineService} from '../../services/timeline.service'
 import {TimetableUserEvent} from '../timetable/timetable'
 import {Time, TimeRange} from '../timetable/model/time-model'
@@ -8,9 +8,11 @@ import {
   FormControl, FormControlDirective, FormControlName,
   FormGroupDirective,
   NG_VALUE_ACCESSOR,
-  NgControl,
+  NgControl, ReactiveFormsModule,
 } from '@angular/forms'
 import {filter, from, map, Observable, of, tap, toArray} from 'rxjs'
+import {CommonModule} from '@angular/common'
+import {DropdownInputComponent} from '../../shared/dropdown-input/dropdown-input.component'
 
 @Component({
     selector: 'app-time-range-selector',
@@ -23,7 +25,8 @@ import {filter, from, map, Observable, of, tap, toArray} from 'rxjs'
             multi: true,
         },
     ],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, DropdownInputComponent]
 })
 export class TimeRangeSelectorComponent implements OnInit, ControlValueAccessor {
   _startTimeOptions$: Observable<Time[]>

@@ -4,7 +4,7 @@ import {DateFormats, NAV_DATE_FORMATS} from '../../core/date-formats'
 
 @Pipe({
     name: 'moment',
-    standalone: false
+    standalone: true
 })
 export class MomentPipe implements PipeTransform {
   constructor(@Optional() @Inject(NAV_DATE_FORMATS) private dateFormats: DateFormats,

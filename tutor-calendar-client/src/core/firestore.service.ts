@@ -12,7 +12,7 @@ import { serverTimestamp } from 'firebase/firestore'
 type CollectionPredicate<T> = string | AngularFirestoreCollection<T>
 type DocPredicate<T> = string | AngularFirestoreDocument<T> | DocumentReference<DocumentData>
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class FirestoreService {
   constructor(private afs: AngularFirestore) {
   }

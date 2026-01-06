@@ -4,7 +4,7 @@ import {FirestoreService} from './firestore.service'
 
 @Pipe({
     name: 'reference',
-    standalone: false
+    standalone: true
 })
 export class ReferencePipe implements PipeTransform {
   constructor(private firestoreService: FirestoreService) {

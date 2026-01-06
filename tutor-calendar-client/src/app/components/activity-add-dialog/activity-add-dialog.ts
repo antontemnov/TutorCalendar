@@ -1,15 +1,27 @@
 import {Component, Inject} from '@angular/core'
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog'
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog'
 import {ActivityAddDialogData, ActivityAddDialogResult} from './activity-dialog-model'
 import {Time, TimeRange} from '../timetable/model/time-model'
-import {FormControl, FormGroup, Validators} from '@angular/forms'
+import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms'
 import {TimetablePreviewService} from '../../services/timetable-preview.service'
+import {DragDropModule} from '@angular/cdk/drag-drop'
+import {MatButtonModule} from '@angular/material/button'
+import {MatInputModule} from '@angular/material/input'
+import {TimeRangeSelectorComponent} from '../time-range-selector/time-range-selector.component'
 
 @Component({
     selector: 'app-activity-add-dialog',
     templateUrl: './activity-add-dialog.html',
     styleUrls: ['./activity-add-dialog.scss'],
-    standalone: false
+    standalone: true,
+    imports: [
+        MatDialogModule,
+        DragDropModule,
+        MatButtonModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        TimeRangeSelectorComponent
+    ]
 })
 export class ActivityAddDialog {
   form: FormGroup

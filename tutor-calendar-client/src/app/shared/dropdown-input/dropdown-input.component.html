@@ -3,9 +3,9 @@
          (ngModelChange)="onInputValueChange($event)"
          (focusin)="open()"/>
 </div>
-<div *ngIf="isOpened" class="dropdown-options">
+<div *ngIf="isOpened()" class="dropdown-options">
   <div class="dropdown-options-container">
-    <div *ngFor="let option of options"
+    <div *ngFor="let option of options()"
          (click)="setValue($event)"
          class="dropdown-option"
          [attr.data-value]="option.toString()">

@@ -1,7 +1,8 @@
-import {Component, ElementRef, EventEmitter, Inject, Input, NgZone, Output} from '@angular/core'
+import {Component, ElementRef, Inject, input, NgZone, output} from '@angular/core'
 import {TimetableUserEvent} from './timetable'
 import {TimeRange} from './model/time-model'
-import {DOCUMENT} from '@angular/common'
+import {DOCUMENT, CommonModule} from '@angular/common'
+import {TimetableSlot} from './timetable-slot'
 
 export class ColumnDay<D = any> {
   constructor(public value: number,
@@ -42,16 +43,17 @@ const FIRING_EVENT_THRESHOLD = 5
     selector: 'app-timetable-column',
     templateUrl: './timetable-column.html',
     styleUrls: ['./timetable-column.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, TimetableSlot]
 })
 export class TimetableColumn {
 
-  @Input() datekey: number
+  datekey = input.required<number>()
 
-  @Input() slots: Slot[] | []
+  slots = input<Slot[]>([])
 
-  @Output() readonly selectionChanged =
-    new EventEmitter<TimetableUserEvent<TimetableColumnActionEventArgs> | null>()
+  readonly selectionChanged =
+    output<TimetableUserEvent<TimetableColumnActionEventArgs> | null>()
 
   private _startMouseDownY: number | null
 
@@ -110,7 +112,7 @@ export class TimetableColumn {
 
     this._ngZone.run(() => this.selectionChanged.emit({
       args: new TimetableColumnActionEventArgs(
-        this.datekey,
+        this.datekey(),
         event.clientY,
         action),
     }))

@@ -1,15 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core'
+import {Component, input, OnInit} from '@angular/core'
 
 @Component({
     selector: 'app-timetable-slot',
     templateUrl: './timetable-slot.html',
     styleUrls: ['./timetable-slot.scss'],
-    standalone: false
+    standalone: true
 })
 export class TimetableSlot implements OnInit {
-  @Input() title: string
+  title = input.required<string>()
 
-  @Input() timeRangeTitle: string
+  timeRangeTitle = input.required<string>()
 
   constructor() { }
 

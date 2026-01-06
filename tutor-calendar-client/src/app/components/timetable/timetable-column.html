@@ -1,8 +1,8 @@
 <div class="day"
-     [attr.data-datekey]="datekey"
+     [attr.data-datekey]="datekey()"
 >
   <div class="layout">
-    <app-timetable-slot *ngFor="let slot of slots"
+    <app-timetable-slot *ngFor="let slot of slots()"
                         [attr.draggable]="true"
                         [title]="slot.title"
                         [timeRangeTitle]="slot?.timeRange?.toString()"

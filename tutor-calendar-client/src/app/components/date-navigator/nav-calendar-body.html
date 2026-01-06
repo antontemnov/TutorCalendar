@@ -1,6 +1,6 @@
 <div role="grid" class="table">
   <div class="row week-header">
-  <span *ngFor="let title of weekdays"
+  <span *ngFor="let title of weekdays()"
         class="weekday-title cell"
         [attr.text]="title.long"
         data-tooltip-position="bottom">
@@ -8,7 +8,7 @@
   </span>
   </div>
 
-  <div *ngFor="let weekDays of rows; let rowIndex = index" class="row">
+  <div *ngFor="let weekDays of rows(); let rowIndex = index" class="row">
   <span *ngFor="let day of weekDays; let colIndex = index" class="cell" role="cell"
         [attr.data-mat-row]="rowIndex"
         [attr.data-mat-col]="colIndex"

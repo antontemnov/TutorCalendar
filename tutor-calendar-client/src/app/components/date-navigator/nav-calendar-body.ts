@@ -1,4 +1,5 @@
-import {Component, Input, Output, EventEmitter, ElementRef, NgZone, OnDestroy} from '@angular/core'
+import {Component, input, output, ElementRef, NgZone, OnDestroy} from '@angular/core'
+import {CommonModule} from '@angular/common'
 
 export class NavCalendarCell<D = any> {
   constructor(public value: number,
@@ -19,32 +20,37 @@ export interface NavCalendarUserEvent<D> {
     selector: 'app-nav-calendar-body',
     templateUrl: 'nav-calendar-body.html',
     styleUrls: ['nav-calendar-body.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule]
 })
 export class CalendarBodyComponent implements OnDestroy  {
-  @Input() rows: NavCalendarCell[][]
+  rows = input.required<NavCalendarCell[][]>()
 
-  @Input() weekdays: {long: string, narrow: string}[]
+  weekdays = input.required<{long: string, narrow: string}[]>()
 
-  @Input() activeCell = 0
+  activeCell = input<number>(0)
 
-  @Input() previewStart: number | null = null
+  isRange = input<boolean>(false)
 
-  @Input() previewEnd: number | null = null
+  startValue = input.required<number>()
 
-  @Input() isRange = false
+  endValue = input.required<number>()
 
-  @Input() startValue: number
+  todayValue = input.required<number>()
 
-  @Input() endValue: number
+  // External preview values from parent (not used internally, just for display)
+  previewStartFromParent = input<number | null>(null, { alias: 'previewStart' })
+  previewEndFromParent = input<number | null>(null, { alias: 'previewEnd' })
 
-  @Input() todayValue: number
+  // Internal mutable preview state
+  private _internalPreviewStart: number | null = null
+  private _internalPreviewEnd: number | null = null
 
-  @Output() readonly previewChange =
-    new EventEmitter<NavCalendarUserEvent<NavCalendarCell | null>>()
+  readonly previewChange =
+    output<NavCalendarUserEvent<NavCalendarCell | null>>()
 
-  @Output() readonly selectedValueChange =
-    new EventEmitter<NavCalendarUserEvent<number> | null>()
+  readonly selectedValueChange =
+    output<NavCalendarUserEvent<number> | null>()
 
   constructor(private _elementRef: ElementRef<HTMLElement>, private _ngZone: NgZone) {
     _ngZone.runOutsideAngular(() => {
@@ -62,7 +68,7 @@ export class CalendarBodyComponent implements OnDestroy  {
       return
     }
 
-    this.previewStart = cell.compareValue
+    this._internalPreviewStart = cell.compareValue
     if (cell) {
       this._ngZone.run(() => this.previewChange.emit({
         args: cell,
@@ -77,7 +83,7 @@ export class CalendarBodyComponent implements OnDestroy  {
       return
     }
 
-    if (cell.compareValue != this.previewStart) {
+    if (cell.compareValue != this._internalPreviewStart) {
       this._ngZone.run(() => this.previewChange.emit({args: cell, event, selectionComplete: true}))
     } else {
       this._ngZone.run(() => this.selectedValueChange.emit({args: cell.compareValue, event}))
@@ -85,7 +91,7 @@ export class CalendarBodyComponent implements OnDestroy  {
   }
 
   private _cellMouseOver = (event: Event) => {
-    if (this.previewStart && isTableCell(event.target as HTMLElement)) {
+    if (this._internalPreviewStart && isTableCell(event.target as HTMLElement)) {
       const cell = this._getCellFromElement(event.target as HTMLElement)
       if (cell) {
         this._ngZone.run(
@@ -117,7 +123,7 @@ export class CalendarBodyComponent implements OnDestroy  {
       const col = cell.getAttribute('data-mat-col')
 
       if (row && col) {
-        return this.rows[parseInt(row)][parseInt(col)]
+        return this.rows()[parseInt(row)][parseInt(col)]
       }
     }
 
@@ -125,24 +131,24 @@ export class CalendarBodyComponent implements OnDestroy  {
   }
 
   _isSelected(value: number): boolean {
-    return !this.isRange && (this.startValue === value || this.endValue === value)
+    return !this.isRange() && (this.startValue() === value || this.endValue() === value)
   }
 
   _isRangeStart(value: number): boolean {
-    return isStart(value, this.startValue, this.endValue)
+    return isStart(value, this.startValue(), this.endValue())
   }
 
   _isRangeEnd(value: number): boolean {
-    return isEnd(value, this.startValue, this.endValue)
+    return isEnd(value, this.startValue(), this.endValue())
   }
 
   _isInRange(value: number): boolean {
-    return isInRange(value, this.startValue, this.endValue, this.isRange)
+    return isInRange(value, this.startValue(), this.endValue(), this.isRange())
   }
 
   _isActiveCell(rowIndex: number, colIndex: number): boolean {
     const cellNumber = rowIndex * 7 + colIndex
-    return cellNumber === this.activeCell
+    return cellNumber === this.activeCell()
   }
 
   ngOnDestroy(): void {

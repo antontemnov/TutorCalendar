@@ -1,28 +1,34 @@
-import {Component, EventEmitter, forwardRef, Input, Output, Provider} from '@angular/core'
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms'
+import {Component, forwardRef, input, output, Provider} from '@angular/core'
+import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms'
 import {TimetableUserEvent} from '../../components/timetable/timetable'
 import {Converter} from '../converters'
+import {CommonModule} from '@angular/common'
 
 @Component({
     selector: 'app-dropdown-input',
     templateUrl: './dropdown-input.component.html',
     styleUrls: ['./dropdown-input.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule]
 })
 export class DropdownInputComponent<T> implements ControlValueAccessor {
-  @Input() options: T[]
+  options = input.required<T[]>()
 
-  @Input() converter: Converter<T> | null
+  converter = input<Converter<T> | null>(null)
 
-  @Input() isOpened: boolean
+  isOpened = input<boolean>(false)
 
-  @Output() isOpenedChange = new EventEmitter<boolean>()
+  isOpenedChange = output<boolean>()
 
-  @Output() readonly valueChanged = new EventEmitter<TimetableUserEvent<T>>()
+  readonly valueChanged = output<TimetableUserEvent<T>>()
 
-  @Output() readonly inputValue = new EventEmitter<TimetableUserEvent<string>>()
+  readonly inputValue = output<TimetableUserEvent<string>>()
 
-  @Input() value: T
+  // Internal value for ControlValueAccessor
+  protected _internalValue: T
+
+  // Public value as input signal for template binding
+  value = input<T>()
 
   constructor() {
   }
@@ -36,10 +42,10 @@ export class DropdownInputComponent<T> implements ControlValueAccessor {
       return
     }
 
-    if (!this.converter) {
+    if (!this.converter()) {
     }
 
-    const convertedValue = this.converter(selectedValue)
+    const convertedValue = this.converter()(selectedValue)
 
     this.writeValue(convertedValue.toString())
     this.onChange(convertedValue.toString())
@@ -59,11 +65,11 @@ export class DropdownInputComponent<T> implements ControlValueAccessor {
   }
 
   writeValue(value: any): void {
-    this.value = value
+    this._internalValue = value
   }
 
   private onChange = (value: any) => {
-    this.value = value
+    this._internalValue = value
   }
 
   open() {
@@ -76,7 +82,7 @@ export class DropdownInputComponent<T> implements ControlValueAccessor {
   }
 
   onInputValueChange(value: string) {
-    const convertedValue = this.converter(value)
+    const convertedValue = this.converter()(value)
     if (convertedValue) {
       this.valueChanged.emit({
         args: convertedValue,
