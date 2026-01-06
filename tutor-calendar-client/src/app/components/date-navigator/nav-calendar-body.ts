@@ -1,4 +1,5 @@
-import {Component, input, output, ElementRef, NgZone, OnDestroy} from '@angular/core'
+import {Component, input, output, ElementRef, afterNextRender, DestroyRef, NgZone} from '@angular/core'
+import {TitleCasePipe} from '@angular/common'
 
 export class NavCalendarCell<D = any> {
   constructor(public value: number,
@@ -20,9 +21,9 @@ export interface NavCalendarUserEvent<D> {
     templateUrl: 'nav-calendar-body.html',
     styleUrls: ['nav-calendar-body.scss'],
     standalone: true,
-    imports: []
+    imports: [TitleCasePipe]
 })
-export class CalendarBodyComponent implements OnDestroy  {
+export class CalendarBodyComponent {
   rows = input.required<NavCalendarCell[][]>()
 
   weekdays = input.required<{long: string, narrow: string}[]>()
@@ -51,13 +52,26 @@ export class CalendarBodyComponent implements OnDestroy  {
   readonly selectedValueChange =
     output<NavCalendarUserEvent<number> | null>()
 
-  constructor(private _elementRef: ElementRef<HTMLElement>, private _ngZone: NgZone) {
-    _ngZone.runOutsideAngular(() => {
+  constructor(private _elementRef: ElementRef<HTMLElement>,
+              private _destroyRef: DestroyRef,
+              private _ngZone: NgZone) {
+    afterNextRender(() => {
       const element = _elementRef.nativeElement
-      element.addEventListener('mousedown', this._cellMouseDown, true)
-      element.addEventListener('mouseup', this._cellMouseUp, true)
-      element.addEventListener('mouseover', this._cellMouseOver, true)
-      element.addEventListener('mouseleave', this._cellMouseLeave, true)
+
+      // Регистрируем все события вне Angular зоны для оптимизации
+      _ngZone.runOutsideAngular(() => {
+        element.addEventListener('mousedown', this._cellMouseDown, true)
+        element.addEventListener('mouseup', this._cellMouseUp, true)
+        element.addEventListener('mouseover', this._cellMouseOver, true)
+        element.addEventListener('mouseleave', this._cellMouseLeave, true)
+      })
+
+      _destroyRef.onDestroy(() => {
+        element.removeEventListener('mousedown', this._cellMouseDown, true)
+        element.removeEventListener('mouseup', this._cellMouseUp, true)
+        element.removeEventListener('mouseover', this._cellMouseOver, true)
+        element.removeEventListener('mouseleave', this._cellMouseLeave, true)
+      })
     })
   }
 
@@ -69,10 +83,13 @@ export class CalendarBodyComponent implements OnDestroy  {
 
     this._internalPreviewStart = cell.compareValue
     if (cell) {
-      this._ngZone.run(() => this.previewChange.emit({
-        args: cell,
-        event,
-        selectionComplete: false}))
+      // Возвращаемся в Angular зону только для emit события
+      this._ngZone.run(() => {
+        this.previewChange.emit({
+          args: cell,
+          event,
+          selectionComplete: false})
+      })
     }
   }
 
@@ -82,29 +99,37 @@ export class CalendarBodyComponent implements OnDestroy  {
       return
     }
 
-    if (cell.compareValue != this._internalPreviewStart) {
-      this._ngZone.run(() => this.previewChange.emit({args: cell, event, selectionComplete: true}))
-    } else {
-      this._ngZone.run(() => this.selectedValueChange.emit({args: cell.compareValue, event}))
-    }
+    // Возвращаемся в Angular зону только для emit события
+    this._ngZone.run(() => {
+      if (cell.compareValue != this._internalPreviewStart) {
+        this.previewChange.emit({args: cell, event, selectionComplete: true})
+      } else {
+        this.selectedValueChange.emit({args: cell.compareValue, event})
+      }
+    })
+
+    this._internalPreviewStart = null
+    this._internalPreviewEnd = null
   }
 
   private _cellMouseOver = (event: Event) => {
     if (this._internalPreviewStart && isTableCell(event.target as HTMLElement)) {
       const cell = this._getCellFromElement(event.target as HTMLElement)
       if (cell) {
-        this._ngZone.run(
-          () => this.previewChange.emit({
-          args: cell,
-          event,
-          selectionComplete: false}))
+        // Возвращаемся в Angular зону только для emit события
+        this._ngZone.run(() => {
+          this.previewChange.emit({
+            args: cell,
+            event,
+            selectionComplete: false})
+        })
       }
     }
   }
 
   private _cellMouseLeave = (event: Event) => {
     if (event.target === this._elementRef.nativeElement) {
-      // this._ngZone.run(() => this.previewChange.emit({value: null, event, selectionComplete: true}))
+      // this.previewChange.emit({value: null, event, selectionComplete: true})
     }
   }
 
@@ -148,13 +173,6 @@ export class CalendarBodyComponent implements OnDestroy  {
   _isActiveCell(rowIndex: number, colIndex: number): boolean {
     const cellNumber = rowIndex * 7 + colIndex
     return cellNumber === this.activeCell()
-  }
-
-  ngOnDestroy(): void {
-    const element = this._elementRef.nativeElement
-    element.removeEventListener('mousedown', this._cellMouseDown, true)
-    element.removeEventListener('mouseup', this._cellMouseUp, true)
-    element.removeEventListener('mouseleave', this._cellMouseOver, true)
   }
 }
 

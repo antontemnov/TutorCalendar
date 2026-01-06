@@ -1,7 +1,7 @@
-import {Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef} from '@angular/core'
+import {Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef, ChangeDetectorRef, NgZone} from '@angular/core'
+import {DOCUMENT, NgStyle} from '@angular/common'
 import {TimetableUserEvent} from './timetable'
 import {TimeRange} from './model/time-model'
-import {DOCUMENT} from '@angular/common'
 import {TimetableSlot} from './timetable-slot'
 
 export class ColumnDay<D = any> {
@@ -44,7 +44,7 @@ const FIRING_EVENT_THRESHOLD = 5
     templateUrl: './timetable-column.html',
     styleUrls: ['./timetable-column.scss'],
     standalone: true,
-    imports: [TimetableSlot]
+  imports: [TimetableSlot, NgStyle]
 })
 export class TimetableColumn {
 
@@ -60,13 +60,24 @@ export class TimetableColumn {
   private _lastMouseDownY: number | null
 
   constructor(private _elementRef: ElementRef<HTMLElement>,
+              private _destroyRef: DestroyRef,
               private _ngZone: NgZone,
+              private _cdr: ChangeDetectorRef,
               @Inject(DOCUMENT) private document: Document) {
-    _ngZone.runOutsideAngular(() => {
-        const element = _elementRef.nativeElement
+    afterNextRender(() => {
+      const element = _elementRef.nativeElement
+
+      // Регистрируем mousedown вне Angular зоны для оптимизации
+      _ngZone.runOutsideAngular(() => {
         element.addEventListener('mousedown', this._columnMouseDown, true)
-      }
-    )
+      })
+
+      _destroyRef.onDestroy(() => {
+        element.removeEventListener('mousedown', this._columnMouseDown, true)
+        this.document.removeEventListener('mousemove', this._mouseMoveHandler, true)
+        this.document.removeEventListener('mouseup', this._mouseUpHandler, true)
+      })
+    })
   }
 
   private _columnMouseDown = (event: MouseEvent) => {
@@ -78,10 +89,8 @@ export class TimetableColumn {
 
     this._emitSelectionChangedEvent(event)
 
-    this._ngZone.runOutsideAngular(() => {
-      this.document.addEventListener('mousemove', this._mouseMoveHandler, true)
-      this.document.addEventListener('mouseup', this._mouseUpHandler, true)
-    })
+    this.document.addEventListener('mousemove', this._mouseMoveHandler, true)
+    this.document.addEventListener('mouseup', this._mouseUpHandler, true)
   }
 
   private _mouseMoveHandler = (e: MouseEvent) => this._threshold(this._emitSelectionChangedEvent, FIRING_EVENT_THRESHOLD, e)
@@ -110,12 +119,14 @@ export class TimetableColumn {
       return
     }
 
-    this._ngZone.run(() => this.selectionChanged.emit({
-      args: new TimetableColumnActionEventArgs(
-        this.datekey(),
-        event.clientY,
-        action),
-    }))
+    this._ngZone.run(() => {
+      this.selectionChanged.emit({
+        args: new TimetableColumnActionEventArgs(
+          this.datekey(),
+          event.clientY,
+          action),
+      })
+    })
   }
 
   private _threshold = (fn: Function, threshold: number, event: MouseEvent) => {

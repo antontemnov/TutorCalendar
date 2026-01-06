@@ -1,5 +1,6 @@
-import {Component, forwardRef, input, output, Provider} from '@angular/core'
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms'
+import {Component, input, output} from '@angular/core'
+import {ControlValueAccessor, FormsModule} from '@angular/forms'
+import {TitleCasePipe} from '@angular/common'
 import {TimetableUserEvent} from '../../components/timetable/timetable'
 import {Converter} from '../converters'
 
@@ -8,7 +9,7 @@ import {Converter} from '../converters'
     templateUrl: './dropdown-input.component.html',
     styleUrls: ['./dropdown-input.component.scss'],
     standalone: true,
-    imports: [FormsModule]
+    imports: [TitleCasePipe, FormsModule]
 })
 export class DropdownInputComponent<T> implements ControlValueAccessor {
   options = input.required<T[]>()

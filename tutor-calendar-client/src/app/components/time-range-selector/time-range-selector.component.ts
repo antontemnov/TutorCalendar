@@ -11,7 +11,7 @@ import {
   NgControl, ReactiveFormsModule,
 } from '@angular/forms'
 import {filter, from, map, Observable, of, tap, toArray} from 'rxjs'
-import {CommonModule} from '@angular/common'
+import {AsyncPipe} from '@angular/common'
 import {DropdownInputComponent} from '../../shared/dropdown-input/dropdown-input.component'
 
 @Component({
@@ -26,7 +26,7 @@ import {DropdownInputComponent} from '../../shared/dropdown-input/dropdown-input
         },
     ],
     standalone: true,
-    imports: [CommonModule, DropdownInputComponent]
+    imports: [AsyncPipe, DropdownInputComponent]
 })
 export class TimeRangeSelectorComponent implements OnInit, ControlValueAccessor {
   _startTimeOptions$: Observable<Time[]>

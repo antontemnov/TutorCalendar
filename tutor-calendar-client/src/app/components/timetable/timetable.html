@@ -14,15 +14,15 @@
   <div class="row">
     <div class="table-container">
       <div class="timeline" data-role="timeline" #timeline>
-        @for (point of mainTimeline; track point.totalMinutes) {
+        @for (point of mainTimeline; track point.toCompareValue()) {
           <div class="time-point"
-               data-time-point="{{point.toString()}}">{{point.toString()}}
+               [attr.data-time-point]="point.toString()">{{point.toString()}}
           </div>
         }
       </div>
 
       <div class="grid">
-        @for (point of mainTimeline; track point.totalMinutes) {
+        @for (point of mainTimeline; track point.toCompareValue()) {
           <div role="row"></div>
         }
       </div>

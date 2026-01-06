@@ -11,7 +11,7 @@ import {DateRange, DateSelectionService} from '../../services/date-selection-ser
 import {NavCalendarCell, NavCalendarUserEvent, CalendarBodyComponent} from './nav-calendar-body'
 import {DateFormats, NAV_DATE_FORMATS} from '../../../core/date-formats'
 import {Subscription} from 'rxjs'
-import {CommonModule} from '@angular/common'
+import {AsyncPipe, TitleCasePipe} from '@angular/common'
 import {MomentPipe} from '../../shared/moment.pipe'
 
 const DAYS_PER_WEEK = 7
@@ -22,7 +22,7 @@ const DAYS_PER_WEEK = 7
     styleUrls: ['./nav-calendar.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CommonModule, MomentPipe, CalendarBodyComponent]
+    imports: [AsyncPipe, TitleCasePipe, MomentPipe, CalendarBodyComponent]
 })
 export class NavCalendar<D> implements OnChanges, OnDestroy {
   _weeks: NavCalendarCell[][]
