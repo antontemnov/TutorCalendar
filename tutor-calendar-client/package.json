@@ -5,7 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
   "private": true,
   "dependencies": {
@@ -28,10 +30,16 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.19",
+    "@angular-eslint/eslint-plugin": "^21.1.0",
+    "@angular-eslint/eslint-plugin-template": "^21.1.0",
+    "@angular-eslint/template-parser": "^21.1.0",
     "@angular/cli": "~19.2.19",
     "@angular/compiler-cli": "~19.2.17",
     "@types/jasmine": "~5.1.4",
     "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
+    "eslint": "^9.39.2",
     "jasmine-core": "~5.5.0",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",
