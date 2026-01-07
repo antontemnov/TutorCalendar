@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core'
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 @Component({
     selector: 'app-timetable-slot',
@@ -8,7 +8,7 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core'
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimetableSlot {
-  title = input.required<string>()
+  title = input.required<string>();
 
-  timeRangeTitle = input.required<string>()
+  timeRangeTitle = input.required<string>();
 }

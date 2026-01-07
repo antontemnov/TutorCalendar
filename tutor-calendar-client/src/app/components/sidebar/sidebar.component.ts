@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core'
-import {NavCalendar} from '../date-navigator/nav-calendar'
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {NavCalendar} from '../date-navigator/nav-calendar';
 
 @Component({
     selector: 'app-sidebar',

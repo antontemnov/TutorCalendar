@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core'
+import {Injectable} from '@angular/core';
 import {
   concatAll,
   map,
@@ -6,11 +6,11 @@ import {
   Observable,
   of,
   toArray
-} from 'rxjs'
-import {DocumentReference} from '@angular/fire/compat/firestore'
-import {FirestoreService} from '../../core/firestore.service'
-import {Slot} from '../components/timetable/timetable-column'
-import {Time, TimeRange} from '../components/timetable/model/time-model'
+} from 'rxjs';
+import {DocumentReference} from '@angular/fire/compat/firestore';
+import {FirestoreService} from '../../core/firestore.service';
+import {Slot} from '../components/timetable/timetable-column';
+import {Time, TimeRange} from '../components/timetable/model/time-model';
 
 export interface Activity {
   id?: string,
@@ -47,18 +47,18 @@ interface CourseSnapshot {
 
 @Injectable({providedIn: 'root'})
 export class ActivityClient {
-  private readonly students$: Observable<StudentSnapshot[]>
+  private readonly students$: Observable<StudentSnapshot[]>;
 
-  private readonly courses$: Observable<CourseSnapshot[]>
+  private readonly courses$: Observable<CourseSnapshot[]>;
 
   constructor(private firestoreService: FirestoreService) {
-    this.students$ = firestoreService.collectionWithIds$<StudentSnapshot>('student')
-    this.courses$ = firestoreService.collection$<CourseSnapshot>('course')
+    this.students$ = firestoreService.collectionWithIds$<StudentSnapshot>('student');
+    this.courses$ = firestoreService.collection$<CourseSnapshot>('course');
   }
 
   load(datekeys: number[]): Observable<Activity[]> {
-    const minDatekey = datekeys[0]
-    const maxDatekey = datekeys[datekeys.length - 1]
+    const minDatekey = datekeys[0];
+    const maxDatekey = datekeys[datekeys.length - 1];
 
     return this.firestoreService.collectionData$<ActivitySnapshot>('activity', ref => ref
       .where('datekey', '>=', minDatekey)
@@ -73,7 +73,7 @@ export class ActivityClient {
             )
         ),
         toArray(),
-      )
+      );
   }
 
   updateOrCreateBySlot(slot: Slot) {
@@ -83,29 +83,29 @@ export class ActivityClient {
       timeEnd: slot.timeRange.end.toString(),
       student_id: 'student/jkqoAdQsG3TrsFKm1k5C',
       title: slot.title ?? '',
-    }
+    };
 
-    const id = activity.id || this.firestoreService.createId()
+    const id = activity.id || this.firestoreService.createId();
 
-    this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity)
+    this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity);
   }
 
   create(activity: ActivitySnapshot): void {
-    const id = activity.id || this.firestoreService.createId()
+    const id = activity.id || this.firestoreService.createId();
 
-    this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity)
+    this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity);
   }
 
   getStudentById$(studentId: string | DocumentReference): Observable<StudentSnapshot> {
     if (!studentId) {
-      return of(null)
+      return of(null);
     }
 
-    return this.firestoreService.docData$<StudentSnapshot>(studentId)
+    return this.firestoreService.docData$<StudentSnapshot>(studentId);
   }
 
   getStudents$(): Observable<StudentSnapshot[]> {
-    return this.firestoreService.collectionData$<StudentSnapshot>('student')
+    return this.firestoreService.collectionData$<StudentSnapshot>('student');
   }
 
   private toActivity(snapshot: ActivitySnapshot): Activity {
@@ -118,6 +118,6 @@ export class ActivityClient {
       studentId: (snapshot.student_id as DocumentReference)?.path ?? snapshot.student_id as string,
       student: null,
       title: snapshot.title
-    }
+    };
   }
 }

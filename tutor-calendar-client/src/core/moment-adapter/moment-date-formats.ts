@@ -1,7 +1,7 @@
-import {DateFormats} from '../date-formats'
+import {DateFormats} from '../date-formats';
 
-export const DATETIME_FORMAT = 'DD.MM.YYYY hh:mm'
-export const HTML_DATE_FORMAT = 'YYYYMMDD'
+export const DATETIME_FORMAT = 'DD.MM.YYYY hh:mm';
+export const HTML_DATE_FORMAT = 'YYYYMMDD';
 
 export const NAV_MOMENT_DATE_FORMATS: DateFormats = {
   parse: {
@@ -13,4 +13,4 @@ export const NAV_MOMENT_DATE_FORMATS: DateFormats = {
     monthYearA11yLabel: 'MMMM YYYY'
     // dateA11yLabel: 'LL',
   },
-}
+};

@@ -1,6 +1,6 @@
-import {Inject, Optional, Pipe, PipeTransform} from '@angular/core'
-import {DateAdapter} from '../../core/date-adapter'
-import {DateFormats, NAV_DATE_FORMATS} from '../../core/date-formats'
+import {Inject, Optional, Pipe, PipeTransform} from '@angular/core';
+import {DateAdapter} from '../../core/date-adapter';
+import {DateFormats, NAV_DATE_FORMATS} from '../../core/date-formats';
 
 @Pipe({
     name: 'moment',
@@ -13,7 +13,7 @@ export class MomentPipe implements PipeTransform {
 
   transform<D>(date: D, format: string = this.dateFormats.display.dateInput): string {
     if (date && format) {
-     return this.dateAdapter.format(date, format)
+     return this.dateAdapter.format(date, format);
     }
   }
 }

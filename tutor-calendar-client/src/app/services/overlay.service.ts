@@ -1,7 +1,7 @@
-import {ConnectionPositionPair, Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay'
-import {ComponentRef, ElementRef, Injectable, Injector, reflectComponentType, Type} from '@angular/core'
-import {ComponentPortal, ComponentType} from '@angular/cdk/portal'
-import {Slot} from '../components/timetable/timetable-column'
+import {ConnectionPositionPair, Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import {ComponentRef, ElementRef, Injectable, Injector, reflectComponentType, Type} from '@angular/core';
+import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
+import {Slot} from '../components/timetable/timetable-column';
 
 // export class PreviewData {
 //   constructor(readonly preview: Slot,

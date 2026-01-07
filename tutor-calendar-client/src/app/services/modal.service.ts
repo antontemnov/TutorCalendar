@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core'
-import {ComponentType} from '@angular/cdk/portal'
-import {MatDialog, MatDialogRef} from '@angular/material/dialog'
-import {TimetablePreviewService} from './timetable-preview.service'
+import {Injectable} from '@angular/core';
+import {ComponentType} from '@angular/cdk/portal';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {TimetablePreviewService} from './timetable-preview.service';
 
 @Injectable({providedIn: 'root'})
 export class ModalService {
@@ -12,7 +12,7 @@ export class ModalService {
     const dialogRef = this.dialogRef.open(component, {
       data,
       panelClass: 'dialog-container',
-    })
+    });
 
     // return dialogRef
     //   .afterClosed()
@@ -21,6 +21,6 @@ export class ModalService {
     //     Promise.resolve(promise)
     //   })
 
-    return dialogRef
+    return dialogRef;
   }
 }

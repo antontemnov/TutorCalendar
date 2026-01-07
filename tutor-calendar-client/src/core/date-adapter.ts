@@ -1,16 +1,16 @@
-import {inject, InjectionToken, LOCALE_ID} from '@angular/core'
+import {inject, InjectionToken, LOCALE_ID} from '@angular/core';
 
 export const NAV_DATE_LOCALE = new InjectionToken<{}>('NAV_DATE_LOCALE', {
   providedIn: 'root',
   factory: NAV_DATE_LOCALE_FACTORY,
-})
+});
 
 export function NAV_DATE_LOCALE_FACTORY(): {} {
-  return inject(LOCALE_ID)
+  return inject(LOCALE_ID);
 }
 
 export abstract class DateAdapter<D, L = any> {
-  protected locale: L
+  protected locale: L;
 
   abstract createDate(year: number, month: number, date: number, hour?: number, minute?: number, second?: number): D
 
@@ -63,35 +63,35 @@ export abstract class DateAdapter<D, L = any> {
   abstract getNumDaysInMonth(date: D): number
 
   protected setLocale(locale: L): void {
-    this.locale = locale
+    this.locale = locale;
   }
 
   deserialize(value: any): D | null {
     if (value == null || this.isDateInstance(value) && this.isValid(value)) {
-      return value
+      return value;
     }
-    return this.invalid()
+    return this.invalid();
   }
 
   getValidDateOrNull(obj: unknown): D | null {
-    return this.isDateInstance(obj) && this.isValid(obj as D) ? obj as D : null
+    return this.isDateInstance(obj) && this.isValid(obj as D) ? obj as D : null;
   }
 
   compareDate(first: D, second: D): number {
     return this.getYear(first) - this.getYear(second) ||
       this.getMonth(first) - this.getMonth(second) ||
-      this.getDate(first) - this.getDate(second)
+      this.getDate(first) - this.getDate(second);
   }
 
   sameDate(first: D | null, second: D | null): boolean {
     if (first && second) {
-      const firstValid = this.isValid(first)
-      const secondValid = this.isValid(second)
+      const firstValid = this.isValid(first);
+      const secondValid = this.isValid(second);
       if (firstValid && secondValid) {
-        return !this.compareDate(first, second)
+        return !this.compareDate(first, second);
       }
-      return firstValid === secondValid
+      return firstValid === secondValid;
     }
-    return first === second
+    return first === second;
   }
 }

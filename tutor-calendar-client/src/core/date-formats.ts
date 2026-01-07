@@ -1,4 +1,4 @@
-import {InjectionToken} from '@angular/core'
+import {InjectionToken} from '@angular/core';
 
 export type DateFormats = {
   parse: {
@@ -12,4 +12,4 @@ export type DateFormats = {
   }
 }
 
-export const NAV_DATE_FORMATS = new InjectionToken<DateFormats>('nav-date-formats')
+export const NAV_DATE_FORMATS = new InjectionToken<DateFormats>('nav-date-formats');

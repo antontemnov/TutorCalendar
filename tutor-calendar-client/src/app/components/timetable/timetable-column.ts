@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef, ChangeDetectorRef, NgZone} from '@angular/core'
-import {DOCUMENT, NgStyle} from '@angular/common'
-import {TimetableUserEvent} from './timetable'
-import {TimeRange} from './model/time-model'
-import {TimetableSlot} from './timetable-slot'
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef, ChangeDetectorRef, NgZone} from '@angular/core';
+import {DOCUMENT, NgStyle} from '@angular/common';
+import {TimetableUserEvent} from './timetable';
+import {TimeRange} from './model/time-model';
+import {TimetableSlot} from './timetable-slot';
 
 export class ColumnDay<D = any> {
   constructor(public value: number,
@@ -26,7 +26,7 @@ export class Slot {
               public position: ISlotPosition) { }
 
   copy(): Slot {
-    return new Slot(this.title, new TimeRange(this.timeRange.start, this.timeRange.end), this.position)
+    return new Slot(this.title, new TimeRange(this.timeRange.start, this.timeRange.end), this.position);
   }
 }
 
@@ -37,7 +37,7 @@ export class TimetableColumnActionEventArgs {
   }
 }
 
-const FIRING_EVENT_THRESHOLD = 5
+const FIRING_EVENT_THRESHOLD = 5;
 
 @Component({
     selector: 'app-timetable-column',
@@ -49,16 +49,16 @@ const FIRING_EVENT_THRESHOLD = 5
 })
 export class TimetableColumn {
 
-  datekey = input.required<number>()
+  datekey = input.required<number>();
 
-  slots = input<Slot[]>([])
+  slots = input<Slot[]>([]);
 
   readonly selectionChanged =
-    output<TimetableUserEvent<TimetableColumnActionEventArgs> | null>()
+    output<TimetableUserEvent<TimetableColumnActionEventArgs> | null>();
 
-  private _startMouseDownY: number | null
+  private _startMouseDownY: number | null;
 
-  private _lastMouseDownY: number | null
+  private _lastMouseDownY: number | null;
 
   constructor(private _elementRef: ElementRef<HTMLElement>,
               private _destroyRef: DestroyRef,
@@ -66,58 +66,58 @@ export class TimetableColumn {
               private _cdr: ChangeDetectorRef,
               @Inject(DOCUMENT) private document: Document) {
     afterNextRender(() => {
-      const element = _elementRef.nativeElement
+      const element = _elementRef.nativeElement;
 
       // Регистрируем mousedown вне Angular зоны для оптимизации
       _ngZone.runOutsideAngular(() => {
-        element.addEventListener('mousedown', this._columnMouseDown, true)
-      })
+        element.addEventListener('mousedown', this._columnMouseDown, true);
+      });
 
       _destroyRef.onDestroy(() => {
-        element.removeEventListener('mousedown', this._columnMouseDown, true)
-        this.document.removeEventListener('mousemove', this._mouseMoveHandler, true)
-        this.document.removeEventListener('mouseup', this._mouseUpHandler, true)
-      })
-    })
+        element.removeEventListener('mousedown', this._columnMouseDown, true);
+        this.document.removeEventListener('mousemove', this._mouseMoveHandler, true);
+        this.document.removeEventListener('mouseup', this._mouseUpHandler, true);
+      });
+    });
   }
 
   private _columnMouseDown = (event: MouseEvent) => {
     if (!(event.target as HTMLElement).getAttribute('data-datekey')) {
-      return
+      return;
     }
 
-    this._lastMouseDownY = this._startMouseDownY = event.clientY
+    this._lastMouseDownY = this._startMouseDownY = event.clientY;
 
-    this._emitSelectionChangedEvent(event)
+    this._emitSelectionChangedEvent(event);
 
-    this.document.addEventListener('mousemove', this._mouseMoveHandler, true)
-    this.document.addEventListener('mouseup', this._mouseUpHandler, true)
-  }
+    this.document.addEventListener('mousemove', this._mouseMoveHandler, true);
+    this.document.addEventListener('mouseup', this._mouseUpHandler, true);
+  };
 
-  private _mouseMoveHandler = (e: MouseEvent) => this._threshold(this._emitSelectionChangedEvent, FIRING_EVENT_THRESHOLD, e)
+  private _mouseMoveHandler = (e: MouseEvent) => this._threshold(this._emitSelectionChangedEvent, FIRING_EVENT_THRESHOLD, e);
 
   private _mouseUpHandler = (e: MouseEvent) => {
-    this.document.removeEventListener('mousemove', this._mouseMoveHandler, true)
-    this.document.removeEventListener('mouseup', this._mouseUpHandler, true)
-    this._emitSelectionChangedEvent(e)
+    this.document.removeEventListener('mousemove', this._mouseMoveHandler, true);
+    this.document.removeEventListener('mouseup', this._mouseUpHandler, true);
+    this._emitSelectionChangedEvent(e);
 
-    this._lastMouseDownY = this._startMouseDownY = null
-  }
+    this._lastMouseDownY = this._startMouseDownY = null;
+  };
 
   private _emitSelectionChangedEvent = (event: MouseEvent) => {
-    let action = null
+    let action = null;
     if (event.type === 'mouseup') {
-      action = Math.abs(this._lastMouseDownY - this._startMouseDownY) < FIRING_EVENT_THRESHOLD ? 'click' : 'selectionEnd'
-      this.document.body.removeAttribute('data-preview-mode')
+      action = Math.abs(this._lastMouseDownY - this._startMouseDownY) < FIRING_EVENT_THRESHOLD ? 'click' : 'selectionEnd';
+      this.document.body.removeAttribute('data-preview-mode');
     }
 
     if (event.type === 'mousemove' || event.type === 'mousedown') {
-      action = 'selection'
-      this.document.body.setAttribute('data-preview-mode', 'true')
+      action = 'selection';
+      this.document.body.setAttribute('data-preview-mode', 'true');
     }
 
     if (!action) {
-      return
+      return;
     }
 
     this._ngZone.run(() => {
@@ -126,14 +126,14 @@ export class TimetableColumn {
           this.datekey(),
           event.clientY,
           action),
-      })
-    })
-  }
+      });
+    });
+  };
 
   private _threshold = (fn: Function, threshold: number, event: MouseEvent) => {
     if (Math.abs((this._lastMouseDownY ?? 0) - event.clientY) > threshold) {
-      this._lastMouseDownY = event.clientY
-      fn(event)
+      this._lastMouseDownY = event.clientY;
+      fn(event);
     }
-  }
+  };
 }

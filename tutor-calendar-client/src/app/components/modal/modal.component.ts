@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core'
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog'
-import {DragDropModule} from '@angular/cdk/drag-drop'
-import {MatButtonModule} from '@angular/material/button'
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
     selector: 'app-modal',
@@ -18,10 +18,10 @@ export class ModalComponent<TComponent, TData> {
   }
 
   cancel(): void {
-    this.dialogRef.close()
+    this.dialogRef.close();
   }
 
   save(): void {
-    this.dialogRef.close(this.initialData)
+    this.dialogRef.close(this.initialData);
   }
 }

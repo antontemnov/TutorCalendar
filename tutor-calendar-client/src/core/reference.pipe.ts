@@ -1,6 +1,6 @@
-import {Pipe, PipeTransform} from '@angular/core'
-import {Observable} from 'rxjs'
-import {FirestoreService} from './firestore.service'
+import {Pipe, PipeTransform} from '@angular/core';
+import {Observable} from 'rxjs';
+import {FirestoreService} from './firestore.service';
 
 @Pipe({
     name: 'reference',
@@ -12,9 +12,9 @@ export class ReferencePipe implements PipeTransform {
 
   transform(value: any): Observable<any> {
      if (!value.path) {
-       return value
+       return value;
      }
 
-     return this.firestoreService.doc$(value.path)
+     return this.firestoreService.doc$(value.path);
   }
 }

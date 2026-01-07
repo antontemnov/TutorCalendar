@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, Inject} from '@angular/core'
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop'
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog'
-import {ActivityAddDialogData, ActivityAddDialogResult} from './activity-dialog-model'
-import {Time, TimeRange} from '../timetable/model/time-model'
-import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms'
-import {TimetablePreviewService} from '../../services/timetable-preview.service'
-import {DragDropModule} from '@angular/cdk/drag-drop'
-import {MatButtonModule} from '@angular/material/button'
-import {MatInputModule} from '@angular/material/input'
-import {TimeRangeSelectorComponent} from '../time-range-selector/time-range-selector.component'
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, Inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {ActivityAddDialogData, ActivityAddDialogResult} from './activity-dialog-model';
+import {Time, TimeRange} from '../timetable/model/time-model';
+import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import {TimetablePreviewService} from '../../services/timetable-preview.service';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {TimeRangeSelectorComponent} from '../time-range-selector/time-range-selector.component';
 
 @Component({
     selector: 'app-activity-add-dialog',
@@ -26,9 +26,9 @@ import {TimeRangeSelectorComponent} from '../time-range-selector/time-range-sele
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityAddDialog {
-  private readonly destroyRef = inject(DestroyRef)
+  private readonly destroyRef = inject(DestroyRef);
 
-  form: FormGroup
+  form: FormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<ActivityAddDialog>,
@@ -40,29 +40,29 @@ export class ActivityAddDialog {
         Validators.required,
       ]),
       timeRange: new FormControl<TimeRange>(initialData.slot.timeRange),
-    })
+    });
 
     this.form.controls['timeRange'].valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(value => {
-        this.changeTimeRange(value)
-      })
+        this.changeTimeRange(value);
+      });
   }
 
   get title() {
-    return this.form.controls.title as FormControl
+    return this.form.controls.title as FormControl;
   }
 
   changeTimeRange(value: TimeRange) {
     if (!value) {
-      return
+      return;
     }
 
-    this.initialData.slot.timeRange = value
-    this._previewService.setPreview(this.initialData.slot)
+    this.initialData.slot.timeRange = value;
+    this._previewService.setPreview(this.initialData.slot);
   }
 
   submit() {
-    this.dialogRef.close(new ActivityAddDialogResult(this.initialData.slot))
+    this.dialogRef.close(new ActivityAddDialogResult(this.initialData.slot));
   }
 }
