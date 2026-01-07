@@ -4,14 +4,13 @@ export class Time {
               public second?: number | 0) {
   }
 
-  static parse(str: any): Time {
+  static parse(str: any): Time | undefined {
     if (str instanceof Time) {
       return str
     }
 
     if (!str) {
-      console.warn(`Cannot parse ${str} value as Time`, str)
-      return
+      return undefined
     }
 
     const arr = str.split(':')

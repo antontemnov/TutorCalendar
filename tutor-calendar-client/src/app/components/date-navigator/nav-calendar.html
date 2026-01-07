@@ -2,7 +2,7 @@
   <div class="nav-calendar">
     <div class="selector-row">
       <span class="title">
-        {{dateSelectionService.activeMonth$ | async | moment: dateFormats.display.monthYearA11yLabel | titlecase}}
+        {{dateSelectionService.activeMonth() | moment: dateFormats.display.monthYearA11yLabel | titlecase}}
       </span>
       <div (click)="dateSelectionService.changeActiveMonth(-1)"
            data-button="prev" class="button prev-month">
@@ -15,15 +15,13 @@
     </div>
 
     <app-nav-calendar-body
-      [rows]="_weeks"
-      [weekdays]="_weekdays"
-      [todayValue]="_todayDate!"
-      [startValue]="_rangeStart!"
-      [endValue]="_rangeEnd!"
-      [previewStart]="_previewStart!"
-      [previewEnd]="_previewEnd!"
-      [isRange]="_isRange"
-      [activeCell]="_dateAdapter.getDate(dateSelectionService.activeMonth$ | async) + _firstWeekOffset - 1"
+      [rows]="weeks()"
+      [weekdays]="weekdays()"
+      [todayValue]="0"
+      [startValue]="rangeStart() ?? 0"
+      [endValue]="rangeEnd() ?? 0"
+      [isRange]="isRange()"
+      [activeCell]="_dateAdapter.getDate(dateSelectionService.activeMonth()) + _firstWeekOffset - 1"
       (selectedValueChange)="_dateSelected($event)"
       (previewChange)="_previewChanged($event)"
     ></app-nav-calendar-body>

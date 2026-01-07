@@ -1,17 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   Inject,
-  OnChanges, OnDestroy,
   Optional,
-  SimpleChanges
+  signal
 } from '@angular/core'
 import {DateAdapter} from '../../../core/date-adapter'
 import {DateRange, DateSelectionService} from '../../services/date-selection-service'
 import {NavCalendarCell, NavCalendarUserEvent, CalendarBodyComponent} from './nav-calendar-body'
 import {DateFormats, NAV_DATE_FORMATS} from '../../../core/date-formats'
-import {Subscription} from 'rxjs'
-import {AsyncPipe, TitleCasePipe} from '@angular/common'
+import {TitleCasePipe} from '@angular/common'
 import {MomentPipe} from '../../shared/moment.pipe'
 
 const DAYS_PER_WEEK = 7
@@ -22,50 +22,43 @@ const DAYS_PER_WEEK = 7
     styleUrls: ['./nav-calendar.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [AsyncPipe, TitleCasePipe, MomentPipe, CalendarBodyComponent]
+    imports: [TitleCasePipe, MomentPipe, CalendarBodyComponent]
 })
-export class NavCalendar<D> implements OnChanges, OnDestroy {
-  _weeks: NavCalendarCell[][]
+export class NavCalendar<D> {
+  readonly weeks = signal<NavCalendarCell[][]>([])
+
+  readonly weekdays = signal<{ long: string, narrow: string }[]>([])
 
   _firstWeekOffset: number
 
-  _lastWeekOffset: number
+  private _lastWeekOffset: number
 
-  _rangeStart: number | null
+  // Use signals for range selection (OnPush compatible)
+  readonly rangeStart = signal<number | null>(null)
+  readonly rangeEnd = signal<number | null>(null)
+  readonly isRange = signal<boolean>(false)
 
-  _rangeEnd: number | null
-
-  _previewStart: number | null
-
-  _previewEnd: number | null
-
-  _isRange: boolean
-
-  _todayDate: number | null
-
-  _weekdays: { long: string, narrow: string }[]
-
-  private _dateNavigatorSelectionChangedSubscription = Subscription.EMPTY
-
-  private _monthChangedSubscription = Subscription.EMPTY
+  // Preview state (for drag selection visualization)
+  private _previewStartValue: number | null = null
 
   constructor(public dateSelectionService: DateSelectionService<D>,
               @Optional() public _dateAdapter: DateAdapter<D>,
               @Optional() @Inject(NAV_DATE_FORMATS) public dateFormats: DateFormats) {
-    this.subscribeOnSelectionChanged()
-  }
-
-  private subscribeOnSelectionChanged(): void {
-    this._monthChangedSubscription.unsubscribe()
-    this._monthChangedSubscription = this.dateSelectionService.activeMonth$.subscribe(this.generate.bind(this))
-
-    this._dateNavigatorSelectionChangedSubscription.unsubscribe()
-    this._dateNavigatorSelectionChangedSubscription = this.dateSelectionService.selectionChanged.subscribe(event => {
-      this.selectDateRangeCells(event.dateRange)
+    // React to active month changes
+    effect(() => {
+      const activeMonth = this.dateSelectionService.activeMonth()
+      if (activeMonth) {
+        this.generate(activeMonth)
+      }
     })
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
+    // React to selection changes from service
+    effect(() => {
+      const event = this.dateSelectionService.selectionChanged()
+      if (event) {
+        this.selectDateRangeCells(event.dateRange)
+      }
+    })
   }
 
   generate(activeMonth): void {
@@ -90,15 +83,15 @@ export class NavCalendar<D> implements OnChanges, OnDestroy {
     const narrowWeekdays = this._dateAdapter.getDayOfWeekNames('narrow')
     const longWeekdays = this._dateAdapter.getDayOfWeekNames('long')
 
-    const weekdays = longWeekdays.map((long, i) => {
+    const weekdaysArr = longWeekdays.map((long, i) => {
       return {long, narrow: narrowWeekdays[i]}
     })
-    this._weekdays = weekdays.slice(firstDayOfWeek).concat(weekdays.slice(0, firstDayOfWeek))
+    this.weekdays.set(weekdaysArr.slice(firstDayOfWeek).concat(weekdaysArr.slice(0, firstDayOfWeek)))
   }
 
   private _createWeekCells(activeMonth): void {
     const daysInMonth = this._dateAdapter.getNumDaysInMonth(activeMonth)
-    this._weeks = [[]]
+    const newWeeks: NavCalendarCell[][] = [[]]
 
     const firstWeekStart = this._dateAdapter.getStartOfWeek(
       this._dateAdapter.createDate(
@@ -107,7 +100,7 @@ export class NavCalendar<D> implements OnChanges, OnDestroy {
 
     for (let i = 0, cell = 0; i < this._firstWeekOffset + daysInMonth + this._lastWeekOffset; i++, cell++) {
       if (cell === DAYS_PER_WEEK) {
-        this._weeks.push([])
+        newWeeks.push([])
         cell = 0
       }
 
@@ -126,7 +119,7 @@ export class NavCalendar<D> implements OnChanges, OnDestroy {
       const enabled = true
       const cellValue = this._dateAdapter.getDate(date)
 
-      this._weeks[this._weeks.length - 1].push(new NavCalendarCell<D>(
+      newWeeks[newWeeks.length - 1].push(new NavCalendarCell<D>(
         cellValue,
         this._getCellCompareValue(date),
         cellValue.toString(),
@@ -134,50 +127,66 @@ export class NavCalendar<D> implements OnChanges, OnDestroy {
         cellClasses,
         date))
     }
+
+    this.weeks.set(newWeeks)
   }
 
   _dateSelected(event: NavCalendarUserEvent<number>): void {
     const selectedDate = this._dateAdapter.parse(event.args)
-    this._previewStart = this._previewEnd = null
+    this._previewStartValue = null
 
     this.dateSelectionService.updateSelection(selectedDate, this)
   }
 
-  _previewChanged(event: NavCalendarUserEvent<NavCalendarCell<D> | null>) {
+  _previewChanged(event: NavCalendarUserEvent<NavCalendarCell<D> | null>): void {
+    const cellValue = this._getCellCompareValue(event.args.rawValue)
+
     if (!event.selectionComplete) {
-      if (!this._previewStart) {
-        this._previewStart = this._getCellCompareValue(event.args.rawValue)
-        return
+      // Start or continue drag selection
+      if (this._previewStartValue === null) {
+        // First cell - start of drag, immediately highlight it
+        this._previewStartValue = cellValue
+        this.updateRangeSelection(cellValue, cellValue, false)
+      } else {
+        // Continuing drag - update end point and show range
+        this.updateRangeSelection(this._previewStartValue, cellValue, true)
       }
-
-      this._previewEnd = this._getCellCompareValue(event.args.rawValue)
-      this.selectDateRangeCells(this.createPreviewDateRange())
-
       return
     }
 
-    this._previewEnd = this._getCellCompareValue(event.args.rawValue)
+    // Selection complete (mouseup)
+    const startValue = this._previewStartValue ?? cellValue
+    const dateRange = new DateRange<D>(
+      this._dateAdapter.parse(startValue),
+      this._dateAdapter.parse(cellValue)
+    )
 
-    this.dateSelectionService.updateSelection(this.createPreviewDateRange(), this)
-
-    this._previewStart = this._previewEnd = null
+    this.dateSelectionService.updateSelection(dateRange, this)
+    this._previewStartValue = null
   }
 
-  private createPreviewDateRange(): DateRange<D> {
-    return new DateRange<D>(
-      this._dateAdapter.parse(this._previewStart),
-      this._dateAdapter.parse(this._previewEnd)
-    )
+  private updateRangeSelection(start: number | null, end: number | null, isRange: boolean): void {
+    // Ensure start <= end for proper range display
+    if (start !== null && end !== null && start > end) {
+      this.rangeStart.set(end)
+      this.rangeEnd.set(start)
+    } else {
+      this.rangeStart.set(start)
+      this.rangeEnd.set(end)
+    }
+    this.isRange.set(isRange)
   }
 
   private selectDateRangeCells(selectedValue: DateRange<D> | D | null): void {
     if (selectedValue instanceof DateRange) {
-      this._rangeStart = this._getCellCompareValue(selectedValue.start)
-      this._rangeEnd = this._getCellCompareValue(selectedValue.end)
-      this._isRange = true
+      this.rangeStart.set(this._getCellCompareValue(selectedValue.start))
+      this.rangeEnd.set(this._getCellCompareValue(selectedValue.end))
+      this.isRange.set(true)
     } else {
-      this._rangeStart = this._rangeEnd = this._getCellCompareValue(selectedValue)
-      this._isRange = false
+      const value = this._getCellCompareValue(selectedValue)
+      this.rangeStart.set(value)
+      this.rangeEnd.set(value)
+      this.isRange.set(false)
     }
   }
 
@@ -190,11 +199,6 @@ export class NavCalendar<D> implements OnChanges, OnDestroy {
     }
 
     return null
-  }
-
-  ngOnDestroy(): void {
-    this._monthChangedSubscription.unsubscribe()
-    this._dateNavigatorSelectionChangedSubscription.unsubscribe()
   }
 }
 

@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef, ChangeDetectorRef, NgZone} from '@angular/core'
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, input, output, afterNextRender, DestroyRef, ChangeDetectorRef, NgZone} from '@angular/core'
 import {DOCUMENT, NgStyle} from '@angular/common'
 import {TimetableUserEvent} from './timetable'
 import {TimeRange} from './model/time-model'
@@ -44,7 +44,8 @@ const FIRING_EVENT_THRESHOLD = 5
     templateUrl: './timetable-column.html',
     styleUrls: ['./timetable-column.scss'],
     standalone: true,
-  imports: [TimetableSlot, NgStyle]
+    imports: [TimetableSlot, NgStyle],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimetableColumn {
 

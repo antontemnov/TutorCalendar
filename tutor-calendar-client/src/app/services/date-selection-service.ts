@@ -1,6 +1,5 @@
-import {Injectable} from '@angular/core'
+import {computed, Injectable, signal} from '@angular/core'
 import {DateAdapter} from '../../core/date-adapter'
-import {BehaviorSubject, Observable, Subject} from 'rxjs'
 
 export class DateRange<D> {
   constructor(
@@ -25,50 +24,49 @@ export interface DateSelectionModelChange<S, D> {
 
 @Injectable({providedIn: 'root'})
 export class DateSelectionService<D> {
-  get activeMonth$(): BehaviorSubject<D> {
-    this._activeMonth$ = this._activeMonth$ || new BehaviorSubject<D>(this.days.length > 0 ?
-      this.days[0] :
-      this.dateAdapter.today())
+  private readonly _activeMonth = signal<D | null>(null)
 
-    return this._activeMonth$
-  }
-  private _activeMonth$: BehaviorSubject<D>
+  /** Active month signal - lazily initialized with today's date */
+  readonly activeMonth = computed(() => {
+    const current = this._activeMonth()
+    if (current !== null) {
+      return current
+    }
+    return this.days().length > 0 ? this.days()[0] : this.dateAdapter.today()
+  })
 
-  get selection(): D | DateRange<D> {
-    return this._selection
-  }
-  private _selection: D | DateRange<D>
+  private readonly _selection = signal<D | DateRange<D> | null>(null)
 
-  get days(): D[] {
-    return this.toDays(this.selection)
-  }
+  /** Current selection signal */
+  readonly selection = this._selection.asReadonly()
 
-  private readonly _selectionChanged = new Subject<DateSelectionModelChange<D | DateRange<D>, D>>()
+  /** Selected days computed from selection */
+  readonly days = computed(() => this.toDays(this._selection()))
 
-  selectionChanged: Observable<DateSelectionModelChange<D | DateRange<D>, D>> = this._selectionChanged
+  private readonly _lastSelectionChange = signal<DateSelectionModelChange<D | DateRange<D>, D> | null>(null)
 
-   constructor(private dateAdapter: DateAdapter<D>) {
-   }
+  /** Last selection change event (for components that need to react to changes) */
+  readonly selectionChanged = this._lastSelectionChange.asReadonly()
 
-  changeActiveMonth(dir: number) {
-    const value = this.dateAdapter.addCalendarMonths(this.activeMonth$.value, dir)
-    this.activeMonth$.next(value)
+  constructor(private dateAdapter: DateAdapter<D>) {
   }
 
-  updateSelection(value: D | DateRange<D>, source: unknown) {
-    const oldValue = (this as {selection: D | DateRange<D>}).selection
-    this._selection = value
+  changeActiveMonth(dir: number): void {
+    const current = this.activeMonth()
+    const value = this.dateAdapter.addCalendarMonths(current, dir)
+    this._activeMonth.set(value)
+  }
 
-    this._selectionChanged.next({
+  updateSelection(value: D | DateRange<D>, source: unknown): void {
+    const oldValue = this._selection()
+    this._selection.set(value)
+
+    this._lastSelectionChange.set({
       dateRange: value,
       selectedDays: this.toDays(value),
       source,
       oldValue
     })
-  }
-
-  ngOnDestroy() {
-    this._selectionChanged.complete()
   }
 
   private toDays(selection: D | DateRange<D> | null): D[] {

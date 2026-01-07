@@ -65,7 +65,6 @@ export class FirestoreService {
       map(docs => docs.map(d => {
           const data = d.payload.doc.data()
           const id = d.payload.doc.id
-        console.log({id, ...data} as T)
           return {id, ...data} as T
         })
       ))

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core'
+import {ChangeDetectionStrategy, Component} from '@angular/core'
 import {HeaderComponent} from './components/header/header.component'
 import {SidebarComponent} from './components/sidebar/sidebar.component'
 import {Timetable} from './components/timetable/timetable'
@@ -8,8 +8,8 @@ import {Timetable} from './components/timetable/timetable'
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     standalone: true,
-    imports: [HeaderComponent, SidebarComponent, Timetable]
+    imports: [HeaderComponent, SidebarComponent, Timetable],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent<D> {
-  constructor() { }
+export class AppComponent {
 }

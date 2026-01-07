@@ -1,4 +1,4 @@
-import {Component, input, output, ElementRef, afterNextRender, DestroyRef, NgZone} from '@angular/core'
+import {ChangeDetectionStrategy, Component, input, output, ElementRef, afterNextRender, DestroyRef, NgZone} from '@angular/core'
 import {TitleCasePipe} from '@angular/common'
 
 export class NavCalendarCell<D = any> {
@@ -21,7 +21,8 @@ export interface NavCalendarUserEvent<D> {
     templateUrl: 'nav-calendar-body.html',
     styleUrls: ['nav-calendar-body.scss'],
     standalone: true,
-    imports: [TitleCasePipe]
+    imports: [TitleCasePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarBodyComponent {
   rows = input.required<NavCalendarCell[][]>()

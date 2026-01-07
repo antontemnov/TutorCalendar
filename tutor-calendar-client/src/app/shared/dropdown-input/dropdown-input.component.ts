@@ -1,4 +1,4 @@
-import {Component, input, output} from '@angular/core'
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core'
 import {ControlValueAccessor, FormsModule} from '@angular/forms'
 import {TitleCasePipe} from '@angular/common'
 import {TimetableUserEvent} from '../../components/timetable/timetable'
@@ -9,7 +9,8 @@ import {Converter} from '../converters'
     templateUrl: './dropdown-input.component.html',
     styleUrls: ['./dropdown-input.component.scss'],
     standalone: true,
-    imports: [TitleCasePipe, FormsModule]
+    imports: [TitleCasePipe, FormsModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DropdownInputComponent<T> implements ControlValueAccessor {
   options = input.required<T[]>()

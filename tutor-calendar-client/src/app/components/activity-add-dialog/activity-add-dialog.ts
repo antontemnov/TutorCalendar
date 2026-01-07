@@ -1,4 +1,5 @@
-import {Component, Inject} from '@angular/core'
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, Inject} from '@angular/core'
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop'
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog'
 import {ActivityAddDialogData, ActivityAddDialogResult} from './activity-dialog-model'
 import {Time, TimeRange} from '../timetable/model/time-model'
@@ -21,9 +22,12 @@ import {TimeRangeSelectorComponent} from '../time-range-selector/time-range-sele
         MatInputModule,
         ReactiveFormsModule,
         TimeRangeSelectorComponent
-    ]
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityAddDialog {
+  private readonly destroyRef = inject(DestroyRef)
+
   form: FormGroup
 
   constructor(
@@ -38,9 +42,11 @@ export class ActivityAddDialog {
       timeRange: new FormControl<TimeRange>(initialData.slot.timeRange),
     })
 
-    this.form.controls['timeRange'].valueChanges.subscribe(value => {
-      this.changeTimeRange(value)
-    })
+    this.form.controls['timeRange'].valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.changeTimeRange(value)
+      })
   }
 
   get title() {

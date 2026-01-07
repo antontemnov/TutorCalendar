@@ -1,4 +1,4 @@
-import {Component, forwardRef, Inject, Injector, OnInit} from '@angular/core'
+import {ChangeDetectionStrategy, Component, forwardRef, Inject, Injector, OnInit} from '@angular/core'
 import {TimelineService} from '../../services/timeline.service'
 import {TimetableUserEvent} from '../timetable/timetable'
 import {Time, TimeRange} from '../timetable/model/time-model'
@@ -26,7 +26,8 @@ import {DropdownInputComponent} from '../../shared/dropdown-input/dropdown-input
         },
     ],
     standalone: true,
-    imports: [AsyncPipe, DropdownInputComponent]
+    imports: [AsyncPipe, DropdownInputComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeRangeSelectorComponent implements OnInit, ControlValueAccessor {
   _startTimeOptions$: Observable<Time[]>

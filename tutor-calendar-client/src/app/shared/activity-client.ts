@@ -88,18 +88,12 @@ export class ActivityClient {
     const id = activity.id || this.firestoreService.createId()
 
     this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity)
-      .then(_ => {
-        console.log('saved', activity)
-      })
   }
 
-  create(activity: ActivitySnapshot) {
+  create(activity: ActivitySnapshot): void {
     const id = activity.id || this.firestoreService.createId()
 
     this.firestoreService.set<ActivitySnapshot>(`activity/${id}`, activity)
-       .then(_ => {
-         console.log('saved', _)
-       })
   }
 
   getStudentById$(studentId: string | DocumentReference): Observable<StudentSnapshot> {
